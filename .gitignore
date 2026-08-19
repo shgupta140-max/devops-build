@@ -1,1 +1,22 @@
-.git
+# Dependencies
+node_modules/
+vendor/
+
+# Environment Variables & Secrets
+.env
+.env.local
+*.pem
+
+# Build Artifacts & Caches
+dist/
+build/
+.next/
+__pycache__/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS Generated Files
+.DS_Store
+Thumbs.db

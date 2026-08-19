@@ -1,0 +1,22 @@
+# Git history
+.git
+.gitignore
+
+# Environment variables and secrets
+.env
+*.pem
+secrets/
+
+# Local dependencies and build artifacts
+node_modules/
+dist/
+build/
+__pycache__/
+
+# Logs and databases
+*.log
+*.sqlite3
+
+# Docker files (Optional, but good practice if you don't need them in the container)
+Dockerfile
+.dockerignore
