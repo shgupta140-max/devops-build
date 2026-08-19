@@ -1,0 +1,6 @@
+echo "=============== Building the Image ==============="
+IMAGE_NAME="react-app"
+sudo docker build -t $IMAGE_NAME . &> build.log || { echo "Docker build failed. Check build.log for details."; exit 1; }
+echo "=============== Build Complete ==============="
+
+    
