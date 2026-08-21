@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_DEV_REPO  = 'shgupta140-max/dev'
-        DOCKERHUB_PROD_REPO = 'shgupta140-max/prod'
+        DOCKERHUB_DEV_REPO  = 'shgupta140/dev'
+        DOCKERHUB_PROD_REPO = 'shgupta140/prod'
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials')
         SLACK_CHANNEL = '#devops-notifications'
     }
@@ -56,11 +56,11 @@ pipeline {
         }
         success {
             echo 'Build and deployment succeeded!'
-            slackSend(channel: '#devops-notifications', color: 'good', message: "Build #${env.BUILD_NUMBER} succeeded for branch ${env.BRANCH_NAME}.")
+            slackSend(channel: SLACK_CHANNEL, color: 'good', message: "Build #${env.BUILD_NUMBER} succeeded for branch ${env.BRANCH_NAME}.")
         }
         failure {
             echo 'Build or deployment failed!'
-            slackSend(channel: '#devops-notifications', color: 'danger', message: "Build #${env.BUILD_NUMBER} failed for branch ${env.BRANCH_NAME}.")
+            slackSend(channel: SLACK_CHANNEL, color: 'danger', message: "Build #${env.BUILD_NUMBER} failed for branch ${env.BRANCH_NAME}.")
         }
     }
 }
