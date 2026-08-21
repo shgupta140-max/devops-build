@@ -35,7 +35,7 @@ pipeline {
 
         stage('Dev Flow: Build & Push') {
             when {
-                branch 'dev'
+                branch 'origin/dev'
             }
             steps {
                 echo 'Running build.sh script for dev branch'
@@ -45,7 +45,7 @@ pipeline {
 
         stage('Prod Flow: Build & Push') {
             when {
-                branch 'main'
+                branch 'origin/main'
             }
             steps {
                 echo 'Running build.sh script for main branch'
