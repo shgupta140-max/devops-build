@@ -35,7 +35,7 @@ pipeline {
 
         stage('Dev Flow: Build & Push') {
             when {
-                branch 'origin/dev'
+                expression { env.GIT_BRANCH == 'origin/dev' }
             }
             steps {
                 echo 'Running build.sh script for dev branch'
@@ -45,7 +45,7 @@ pipeline {
 
         stage('Prod Flow: Build & Push') {
             when {
-                branch 'origin/main'
+                expression { env.GIT_BRANCH == 'origin/main' }
             }
             steps {
                 echo 'Running build.sh script for main branch'
@@ -54,8 +54,8 @@ pipeline {
         }
 
         stage('Deploying Application') {
-            when {
-                branch 'main'
+	    when {
+                expression { env.GIT_BRANCH == 'origin/main' }
             }
             steps {
                 echo 'Running deploy.sh for Production environment...'
