@@ -4,7 +4,7 @@ pipeline {
     environment {
         DOCKERHUB_DEV_REPO  = 'shgupta140/dev'
         DOCKERHUB_PROD_REPO = 'shgupta140/prod'
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials')
+        DOCKERHUB_CREDENTIALS = credentials('DockerHubCredentials')
         SLACK_CHANNEL = '#devops-notifications'
     }
 
