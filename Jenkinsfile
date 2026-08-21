@@ -40,6 +40,10 @@ pipeline {
             steps {
                 echo 'Running build.sh script for dev branch'
                 sh "./build.sh ${DOCKERHUB_DEV_REPO} ${env.BUILD_NUMBER}"
+		echo "=============== Pushing Image to ${DOCKERHUB_DEV_REPO} ============"
+		sh "docker push ${DOCKERHUB_DEV_REPO}:reactjs-app-${env.BUILD_NUMBER} &>> /tmp/push.log || { echo 'Docker push failed, Check push.log for details.'; exit 1;}"
+		echo "=============== Image Pushed to repository =========="
+
             }
         }
 
@@ -50,6 +54,8 @@ pipeline {
             steps {
                 echo 'Running build.sh script for main branch'
                 sh "./build.sh ${DOCKERHUB_PROD_REPO} ${env.BUILD_NUMBER}"
+		echo "=============== Pushing Image to ${DOCKERHUB_PROD_REPO} ============"
+		sh "docker push ${DOCKERHUB_PROD_REPO}:$reactjs-app-${env.BUILD_NUMBER} &>> /tmp/push.log || { echo 'Docker push failed, Check push.log for details.'; exit 1;}"
             }
         }
 
