@@ -39,8 +39,7 @@ pipeline {
             }
             steps {
                 echo 'Running build.sh script for dev branch'
-                sh "./build.sh"
-		sh "docker push ${DOCKERHUB_DEB_REPO}:dev-${env.BUILD_NUMBER}"
+                sh "./build.sh ${DOCKERHUB_DEV_REPO} ${env.BUILD_NUMBER}"
             }
         }
 
@@ -50,8 +49,7 @@ pipeline {
             }
             steps {
                 echo 'Running build.sh script for main branch'
-                sh "./build.sh"
-		sh "docker push ${DOCKERHUB_PROD_REPO}:prod-${env.BUILD_NUMBER}"
+                sh "./build.sh ${DOCKERHUB_PROD_REPO} ${env.BUILD_NUMBER}"
             }
         }
 
@@ -61,7 +59,7 @@ pipeline {
             }
             steps {
                 echo 'Running deploy.sh for Production environment...'
-                sh "./deploy.sh ${DOCKERHUB_PROD_REPO} prod-${env.BUILD_NUMBER} 80"
+                sh "./deploy.sh ${DOCKERHUB_PROD_REPO} ${env.BUILD_NUMBER} 80"
             }
         }
     }
