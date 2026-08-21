@@ -8,7 +8,16 @@ pipeline {
         SLACK_CHANNEL = '#devops-notifications'
     }
 
+    tools {
+        docker 'docker'
+    }
+
     stages {
+        stage('Check Docker Version') {
+            steps {
+                sh 'docker --version'
+            }
+            
         stage('Docker Login') {
             steps {
                 script {
