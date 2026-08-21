@@ -10,7 +10,6 @@ secrets/
 # Local dependencies and build artifacts
 node_modules/
 dist/
-build/
 __pycache__/
 
 # Logs and databases
