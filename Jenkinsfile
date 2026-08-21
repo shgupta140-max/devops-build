@@ -18,12 +18,19 @@ pipeline {
                 sh 'docker --version'
             }
         }
+       
         stage('Docker Login') {
             steps {
-                script {
-                    docker.login(credentialsId: "${DOCKERHUB_CREDENTIALS}")
+                withCredentials([usernamePassword(
+                    credentialsId: 'DockerHubCredentials',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    sh '''
+                            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                    '''
                 }
-            }
+            }      
         }
 
         stage('Dev Flow: Build & Push') {
