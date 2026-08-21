@@ -72,11 +72,11 @@ pipeline {
         }
         success {
             echo 'Build and deployment succeeded!'
-            slackSend(channel: SLACK_CHANNEL, color: 'good', message: "Build #${env.BUILD_NUMBER} succeeded for branch ${env.BRANCH_NAME}.")
+            slackSend(channel: SLACK_CHANNEL, color: 'good', message: "Build #${env.BUILD_NUMBER} succeeded for branch ${branch}.")
         }
         failure {
             echo 'Build or deployment failed!'
-            slackSend(channel: SLACK_CHANNEL, color: 'danger', message: "Build #${env.BUILD_NUMBER} failed for branch ${env.BRANCH_NAME}.")
+            slackSend(channel: SLACK_CHANNEL, color: 'danger', message: "Build #${env.BUILD_NUMBER} failed for branch ${branch}.")
         }
     }
 }
