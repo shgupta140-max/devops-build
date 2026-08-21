@@ -71,12 +71,26 @@ pipeline {
             sh "docker logout"
         }
         success {
-            echo 'Build and deployment succeeded!'
-            slackSend(channel: SLACK_CHANNEL, color: 'good', message: "Build #${env.BUILD_NUMBER} succeeded for branch ${branch}.")
+            script {
+                def branchName = env.BRANCH_NAME ?: env.GIT_BRANCH ?: sh(
+                    script: 'git rev-parse --abbrev-ref HEAD',
+                    returnStdout: true
+                ).trim()
+
+                echo 'Build and deployment succeeded!'
+                slackSend(channel: SLACK_CHANNEL, color: 'good', message: "Build #${env.BUILD_NUMBER} succeeded for branch ${branchName}.")
+            }
         }
         failure {
-            echo 'Build or deployment failed!'
-            slackSend(channel: SLACK_CHANNEL, color: 'danger', message: "Build #${env.BUILD_NUMBER} failed for branch ${branch}.")
+            script {
+                def branchName = env.BRANCH_NAME ?: env.GIT_BRANCH ?: sh(
+                    script: 'git rev-parse --abbrev-ref HEAD',
+                    returnStdout: true
+                ).trim()
+
+                echo 'Build or deployment failed!'
+                slackSend(channel: SLACK_CHANNEL, color: 'danger', message: "Build #${env.BUILD_NUMBER} failed for branch ${branchName}.")
+            }
         }
     }
 }
