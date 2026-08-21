@@ -17,7 +17,7 @@ pipeline {
             steps {
                 sh 'docker --version'
             }
-            
+        }
         stage('Docker Login') {
             steps {
                 script {
