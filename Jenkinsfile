@@ -8,7 +8,7 @@ pipeline {
         AWS_REGION = 'ap-south-1'
         EC2_IP_SSM_PARAMETER = 'ReactJS_Node_Public_IP'
         EC2_SSH_USER = 'ubuntu'
-        SLACK_CHANNEL = '#devops-notifications'
+        SLACK_CHANNEL = '#reactjs-app-pipeline'
     }
 
     tools {
