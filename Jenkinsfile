@@ -68,55 +68,58 @@ pipeline {
             }
             steps {
                 echo 'Deploying the production image to the EC2 instance...'
-                sshagent(credentials: ['EC2_SSH_CREDENTIALS']) {
-                    withCredentials([
-                        usernamePassword(
-                            credentialsId: 'DockerHubCredentials',
-                            usernameVariable: 'DOCKER_USER',
-                            passwordVariable: 'DOCKER_PASS'
-                        )
-                    ]) {
-                        sh '''
-                            set -eu
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'DockerHubCredentials',
+                        usernameVariable: 'DOCKER_USER',
+                        passwordVariable: 'DOCKER_PASS'
+                    ),
+                    sshUserPrivateKey(
+                        credentialsId: 'EC2_SSH_CREDENTIALS',
+                        keyFileVariable: 'SSH_KEY',
+                        usernameVariable: 'EC2_SSH_USER'
+                    )
+                ]) {
+                    sh '''
+                        set -eu
 
-                            IMAGE="${DOCKERHUB_PROD_REPO}:reactjs-app-${BUILD_NUMBER}"
-                            EC2_IP="$(aws ssm get-parameter \
-                                --name "$EC2_IP_SSM_PARAMETER" \
-                                --with-decryption \
-                                --query 'Parameter.Value' \
-                                --output text \
-                                --region "$AWS_REGION")"
-                            EC2_HOST="${EC2_SSH_USER}@${EC2_IP}"
-                            echo "Deploying to ${EC2_HOST}"
+                        IMAGE="${DOCKERHUB_PROD_REPO}:reactjs-app-${BUILD_NUMBER}"
+                        EC2_IP="$(aws ssm get-parameter \
+                            --name "$EC2_IP_SSM_PARAMETER" \
+                            --with-decryption \
+                            --query 'Parameter.Value' \
+                            --output text \
+                            --region "$AWS_REGION")"
+                        EC2_HOST="${EC2_SSH_USER}@${EC2_IP}"
+                        echo "Deploying to ${EC2_HOST}"
 
-                            printf '%s\n' "$DOCKER_PASS" | ssh -o StrictHostKeyChecking=no "$EC2_HOST" \
-                                "docker login --username '$DOCKER_USER' --password-stdin"
+                        printf '%s\n' "$DOCKER_PASS" | ssh -i "$SSH_KEY" -o StrictHostKeyChecking=no "$EC2_HOST" \
+                            "docker login --username '$DOCKER_USER' --password-stdin"
 
-                            ssh -o StrictHostKeyChecking=no "$EC2_HOST" \
-                                "IMAGE='$IMAGE' bash -s" <<'REMOTE_SCRIPT'
-                            set -eu
-                            trap 'docker logout >/dev/null 2>&1 || true' EXIT
+                        ssh -i "$SSH_KEY" -o StrictHostKeyChecking=no "$EC2_HOST" \
+                            "IMAGE='$IMAGE' bash -s" <<'REMOTE_SCRIPT'
+                        set -eu
+                        trap 'docker logout >/dev/null 2>&1 || true' EXIT
 
-                            docker pull "$IMAGE"
-                            docker rm -f reactjs-app 2>/dev/null || true
-                            docker run -d --name reactjs-app --restart unless-stopped -p 80:80 "$IMAGE"
+                        docker pull "$IMAGE"
+                        docker rm -f reactjs-app 2>/dev/null || true
+                        docker run -d --name reactjs-app --restart unless-stopped -p 80:80 "$IMAGE"
 
-                            for attempt in 1 2 3 4 5 6 7 8 9 10; do
-                                if curl --fail --silent --show-error http://127.0.0.1:80/ >/dev/null; then
-                                    echo 'Application is running on port 80.'
-                                    docker logout
-                                    exit 0
-                                fi
-                                sleep 3
-                            done
+                        for attempt in 1 2 3 4 5 6 7 8 9 10; do
+                            if curl --fail --silent --show-error http://127.0.0.1:80/ >/dev/null; then
+                                echo 'Application is running on port 80.'
+                                docker logout
+                                exit 0
+                            fi
+                            sleep 3
+                        done
 
-                            echo 'Application failed the port 80 health check.' >&2
-                            docker logs --tail 100 reactjs-app >&2 || true
-                            docker logout
-                            exit 1
-                            REMOTE_SCRIPT
-                        '''
-                    }
+                        echo 'Application failed the port 80 health check.' >&2
+                        docker logs --tail 100 reactjs-app >&2 || true
+                        docker logout
+                        exit 1
+                        REMOTE_SCRIPT
+                    '''
                 }
             }
         }
